@@ -4,11 +4,11 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "node_1": "node dev/networkNode.js 3001 http://localhost:3001",
-    "node_2": "node dev/networkNode.js 3002 http://localhost:3002",
-    "node_3": "node dev/networkNode.js 3003 http://localhost:3003",
-    "node_4": "node dev/networkNode.js 3004 http://localhost:3004",
-    "node_5": "node dev/networkNode.js 3005 http://localhost:3005",
+    "node_1": "nodemon --watch dev -e js dev/networkNode.js 3001 http://localhost:3001",
+    "node_2": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002",
+    "node_3": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003",
+    "node_4": "nodemon --watch dev -e js dev/networkNode.js 3004 http://localhost:3004",
+    "node_5": "nodemon --watch dev -e js dev/networkNode.js 3005 http://localhost:3005",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,6 +17,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "sha256": "^0.2.0",
     "uuid": "^3.3.3"
