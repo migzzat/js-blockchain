@@ -79,7 +79,7 @@ app.get('/mine', function (req, res) {
            promisesReq.push(rp(reqOpt));
        });
 
-       Promise.all()
+       Promise.all(promisesReq)
        .then(data => {
            const requestOption = {
              uri: `${ bitcoin.currentNodeUrl }/transaction/broadcast`,
@@ -98,8 +98,6 @@ app.get('/mine', function (req, res) {
           note: "new block mined and broadcast successfully.",
           block: newBlock
         });
-       }).catch( error => {
-          res.json({note : `Something bad happened.`, error,});
        });
 });
 
@@ -195,5 +193,51 @@ app.post('/register-nodes-bulk', function(req, res) {
   });
 });
 
+app.get('/consensus', function(req, res) {
+    
+    let promisesRequests = [];
+    bitcoin.networkNodes.forEach((nodeNetworkUrl) => {
+        const reqOpt = {
+            uri: `${ nodeNetworkUrl }/blockchain`,
+            method: 'GET',
+            json: true
+        };
+        promisesRequests.push(rp(reqOpt));
+    });
+
+    Promise.all(promisesRequests)
+    .then(blockchains => {
+
+        const currentChainLength = bitcoin.chain.length;
+        let maxChainLength = currentChainLength;
+        let newLongestChain = null;
+        let newPendingTransactions = null;
+
+        blockchains.forEach((blockchain) => {
+              if(blockchain.chain.length > maxChainLength){
+                  maxChainLength = blockchain.chain.length;
+                  newLongestChain = blockchain.chain;
+                  newPendingTransactions = blockchain.pendingTransactions;
+              }
+        });
+
+        if(!newLongestChain || (newLongestChain && !bitcoin.chainIsValid(newLongestChain))) {
+               res.json({
+                  note: 'current chain has not been replaced.',
+                  chain: bitcoin.chain
+               });
+        } else {
+              
+              bitcoin.chain = newLongestChain;
+              bitcoin.pendingTransactions = newPendingTransactions;
+
+              res.json({
+                note: 'current chain has not been replaced.',
+                chain: bitcoin.chain
+              });
+        }
+        
+    });
+});
 
 app.listen(port, function () { console.log(`listening on port [:${port}]...`) });
